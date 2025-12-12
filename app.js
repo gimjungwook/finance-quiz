@@ -16,6 +16,7 @@ const state = {
     infinitePool: [],       // 무한 모드 문제 풀
     infiniteSolved: 0,      // 무한 모드에서 푼 문제 수
     currentQuestion: null,  // 현재 문제 (무한 모드용)
+    infiniteWrongThisSession: new Set(), // 이번 세션에서 틀린 문제 ID
     // 선택지 섞기용
     shuffledOptions: [],    // 섞인 선택지
     shuffledAnswerIndex: 0, // 섞인 후 정답 인덱스
@@ -346,6 +347,7 @@ function prepareQuestions() {
             state.infinitePool = [...weekQuestions];
             state.infiniteSolved = 0;
             state.correctCount = 0;
+            state.infiniteWrongThisSession = new Set(); // 이번 세션 틀린 문제 초기화
             return state.infinitePool.length > 0;
     }
 
@@ -517,10 +519,9 @@ function displayInfiniteQuestion() {
     const typeBadge = document.getElementById('question-type-badge');
     typeBadge.textContent = question.type === 'ox' ? 'O/X' : '객관식';
 
-    // 틀렸던 문제 배지
+    // 틀렸던 문제 배지 (무한 모드: 이번 세션에서 틀린 문제만 표시)
     const wrongBadge = document.getElementById('previously-wrong-badge');
-    const qStats = getQuestionStats(question.id);
-    if (qStats.wrong > 0) {
+    if (state.infiniteWrongThisSession.has(question.id)) {
         wrongBadge.classList.add('show');
     } else {
         wrongBadge.classList.remove('show');
@@ -731,12 +732,14 @@ function showInfiniteExplanation(question, isCorrect, isSkip) {
     if (isSkip) {
         header.className = 'result-header wrong';
         header.textContent = '🤷 모르겠음 선택 (오답 처리)';
+        state.infiniteWrongThisSession.add(question.id); // 이번 세션 틀린 문제로 기록
     } else if (isCorrect) {
         header.className = 'result-header correct';
         header.textContent = '✅ 정답입니다! (풀에서 제거됨)';
     } else {
         header.className = 'result-header wrong';
         header.textContent = '❌ 오답입니다! (다시 출제됨)';
+        state.infiniteWrongThisSession.add(question.id); // 이번 세션 틀린 문제로 기록
     }
 
     // 문제 텍스트 표시
