@@ -1177,9 +1177,20 @@ document.addEventListener('DOMContentLoaded', () => {
     // ============================
     // 키보드 단축키
     // ============================
+
+    // 한글 키보드 매핑 (ㅁㄴㅇㄹ -> asdf)
+    const koreanToEnglish = {
+        'ㅁ': 'a', 'ㄴ': 's', 'ㅇ': 'd', 'ㄹ': 'f'
+    };
+
+    function normalizeKey(key) {
+        return koreanToEnglish[key] || key.toLowerCase();
+    }
+
     document.addEventListener('keydown', (e) => {
         const quizScreen = document.getElementById('quiz-screen');
         const explanationScreen = document.getElementById('explanation-screen');
+        const key = normalizeKey(e.key);
 
         // 퀴즈 화면에서 답 선택
         if (quizScreen.classList.contains('active') && !state.isAnswered) {
@@ -1198,11 +1209,11 @@ document.addEventListener('DOMContentLoaded', () => {
                     }
                 }
             } else if (question.type === 'ox') {
-                // O/X 문제: A=O, S=X, Space=모르겠음
-                if (e.key === 'a' || e.key === 'A') {
+                // O/X 문제: A(ㅁ)=O, S(ㄴ)=X, Space=모르겠음
+                if (key === 'a') {
                     const oBtn = document.querySelector('.ox-btn.o');
                     if (oBtn) oBtn.click();
-                } else if (e.key === 's' || e.key === 'S') {
+                } else if (key === 's') {
                     const xBtn = document.querySelector('.ox-btn.x');
                     if (xBtn) xBtn.click();
                 } else if (e.key === ' ') {
@@ -1211,13 +1222,12 @@ document.addEventListener('DOMContentLoaded', () => {
                     if (skipBtn) skipBtn.click();
                 }
             } else {
-                // 객관식: A, S, D, F, Space=모르겠음
+                // 객관식: A(ㅁ), S(ㄴ), D(ㅇ), F(ㄹ), Space=모르겠음
                 const keyMap = { 'a': 0, 's': 1, 'd': 2, 'f': 3 };
-                const lowerKey = e.key.toLowerCase();
-                if (keyMap.hasOwnProperty(lowerKey)) {
+                if (keyMap.hasOwnProperty(key)) {
                     const optionBtns = document.querySelectorAll('.option-btn:not(.skip)');
-                    if (optionBtns[keyMap[lowerKey]]) {
-                        optionBtns[keyMap[lowerKey]].click();
+                    if (optionBtns[keyMap[key]]) {
+                        optionBtns[keyMap[key]].click();
                     }
                 } else if (e.key === ' ') {
                     e.preventDefault();
