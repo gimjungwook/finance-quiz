@@ -3,6 +3,10 @@
 
 // 모든 주차 문제를 합침
 const questions = [
+    ...week1Questions,
+    ...week3Questions,
+    ...week5Questions,
+    ...week7Questions,
     ...week9Questions,
     ...week11aQuestions,
     ...week11bQuestions,
@@ -13,6 +17,10 @@ const questions = [
 
 // 주차 정보
 const weekInfo = {
+    "1": { name: "1주차: 경제의 순환과 금융", shortName: "경제순환/금융기초" },
+    "3": { name: "3주차: 금융지표 및 금융상품", shortName: "금융지표/금융상품" },
+    "5": { name: "5주차: 금융투자상품", shortName: "금융투자상품" },
+    "7": { name: "7주차: 펀드와 파생상품", shortName: "펀드/파생상품" },
     "9": { name: "9주차: 신용관리", shortName: "신용관리" },
     "11a": { name: "11주차: 부채관리", shortName: "부채관리" },
     "11b": { name: "11주차: 보험과 위험관리", shortName: "보험/위험관리" },
