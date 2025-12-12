@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>실용금융 퀴즈</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📚</text></svg>">
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <!-- 메인 화면 -->
+        <div id="main-screen" class="screen active">
+            <h1>📚 실용금융 퀴즈</h1>
+            <p class="version">v1.4.0</p>
+
+            <div class="stats-summary">
+                <div class="stat-item">
+                    <span class="stat-label">총 푼 문제</span>
+                    <span class="stat-value" id="total-solved">0</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">전체 정답률</span>
+                    <span class="stat-value" id="total-accuracy">0%</span>
+                </div>
+            </div>
+
+            <h2>📖 주차 선택</h2>
+            <div class="week-buttons">
+                <button class="week-btn" data-week="9">9주차<br><small>신용관리</small></button>
+                <button class="week-btn" data-week="11a">11주차<br><small>부채관리</small></button>
+                <button class="week-btn" data-week="11b">11주차<br><small>보험/위험관리</small></button>
+                <button class="week-btn" data-week="13">13주차<br><small>노후와 연금</small></button>
+                <button class="week-btn" data-week="14">14주차<br><small>핀테크</small></button>
+                <button class="week-btn" data-week="15">15주차<br><small>금융소비자보호</small></button>
+            </div>
+
+            <h2>🎮 모드 선택</h2>
+            <div class="mode-buttons">
+                <button class="mode-btn" id="mode-weekly">
+                    📚 주차별 퀴즈
+                    <small>선택한 주차의 문제를 순서대로</small>
+                </button>
+                <button class="mode-btn" id="mode-review">
+                    🔄 틀린 문제 복습
+                    <small>틀렸던 문제만 다시 풀기</small>
+                </button>
+                <button class="mode-btn highlight" id="mode-infinite">
+                    ♾️ 무한 모드
+                    <small>틀린 문제가 3배 더 자주 출제!</small>
+                </button>
+            </div>
+
+            <div id="start-section" style="display: none;">
+                <p class="selected-info" id="selected-info"></p>
+                <button class="start-btn" id="start-quiz">퀴즈 시작! 🚀</button>
+            </div>
+        </div>
+
+        <!-- 퀴즈 화면 -->
+        <div id="quiz-screen" class="screen">
+            <div class="quiz-header">
+                <button class="back-btn" id="back-to-main">← 메인으로</button>
+                <div class="progress-info">
+                    <span id="question-number">1</span> / <span id="total-questions">20</span>
+                    <span class="mode-badge" id="current-mode-badge">주차별</span>
+                </div>
+            </div>
+
+            <div class="progress-bar">
+                <div class="progress-fill" id="progress-fill"></div>
+            </div>
+
+            <div class="question-container">
+                <div class="question-badges">
+                    <span class="question-type-badge" id="question-type-badge">객관식</span>
+                    <span class="previously-wrong-badge" id="previously-wrong-badge">📍 틀렸던 문제</span>
+                </div>
+                <h2 class="question-text" id="question-text"></h2>
+            </div>
+
+            <div class="options-container" id="options-container">
+                <!-- 선택지가 여기에 동적으로 생성됨 -->
+            </div>
+        </div>
+
+        <!-- 해설 화면 -->
+        <div id="explanation-screen" class="screen">
+            <div class="result-header" id="result-header">
+                <!-- ✅ 정답입니다! 또는 ❌ 오답입니다! -->
+            </div>
+
+            <div class="question-review">
+                <span class="label">📝 문제:</span>
+                <p class="question-review-text" id="question-review-text"></p>
+            </div>
+
+            <div class="explanation-container">
+                <div class="answer-section">
+                    <span class="label">📌 정답:</span>
+                    <span class="correct-answer" id="correct-answer"></span>
+                </div>
+
+                <div class="your-answer-section" id="your-answer-section" style="display: none;">
+                    <span class="label">당신의 답:</span>
+                    <span class="your-answer" id="your-answer"></span>
+                </div>
+
+                <div class="explanation-section">
+                    <span class="label">📖 해설:</span>
+                    <p class="explanation-text" id="explanation-text"></p>
+                </div>
+
+                <div class="tip-section" id="tip-section" style="display: none;">
+                    <span class="label">💡 암기 팁:</span>
+                    <p class="tip-text" id="tip-text"></p>
+                </div>
+            </div>
+
+            <button class="next-btn" id="next-question">다음 문제 →</button>
+        </div>
+
+        <!-- 결과 화면 -->
+        <div id="result-screen" class="screen">
+            <h1>🎉 퀴즈 완료!</h1>
+
+            <div class="final-result">
+                <div class="result-circle" id="result-circle">
+                    <span class="result-score" id="result-score">0</span>
+                    <span class="result-total" id="result-total">/ 0</span>
+                </div>
+                <p class="result-percentage" id="result-percentage">0%</p>
+                <p class="result-message" id="result-message"></p>
+            </div>
+
+            <div class="result-actions">
+                <button class="action-btn" id="retry-wrong">🔄 틀린 문제만 다시 풀기</button>
+                <button class="action-btn" id="retry-all">📚 처음부터 다시 풀기</button>
+                <button class="action-btn primary" id="go-main">🏠 메인으로</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 주차별 문제 데이터 -->
+    <script src="data/week9.js"></script>
+    <script src="data/week11a.js"></script>
+    <script src="data/week11b.js"></script>
+    <script src="data/week13.js"></script>
+    <script src="data/week14.js"></script>
+    <script src="data/week15.js"></script>
+    <!-- 메인 로더 및 앱 -->
+    <script src="questions.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
